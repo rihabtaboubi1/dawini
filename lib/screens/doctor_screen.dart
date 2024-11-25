@@ -1,58 +1,78 @@
 import 'package:flutter/material.dart';
+import 'doctor_video_call_screen.dart';
 
-class DoctorScreen extends StatelessWidget {
+class DoctorScreen extends StatefulWidget {
+  @override
+  _DoctorScreenState createState() => _DoctorScreenState();
+}
+
+class _DoctorScreenState extends State<DoctorScreen> {
+  List<String> consultations = [
+    "Consultation avec Patient A",
+    "Consultation avec Patient B",
+    "Consultation avec Patient C",
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Espace Médecin'),
+        title: Text('Consultations disponibles'),
         backgroundColor: Colors.blueAccent,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ElevatedButton.icon(
-              onPressed: () {
-                // Logique pour accepter une consultation
-              },
-              icon: Icon(Icons.check_circle),
-              label: Text('Accepter Consultation'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-                textStyle: TextStyle(fontSize: 16),
+      body: ListView.builder(
+        itemCount: consultations.length,
+        itemBuilder: (context, index) {
+          return Card(
+            margin: EdgeInsets.all(10),
+            child: ListTile(
+              title: Text(consultations[index]),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Bouton Accepter
+                  ElevatedButton(
+                    onPressed: () {
+                      // Naviguer vers l'écran d'appel vidéo
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => DoctorVideoCallScreen(
+                            patientName: consultations[index],
+                          ),
+                        ),
+                      );
+                    },
+                    child: Text('Accepter'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  // Bouton Rejeter
+                  ElevatedButton(
+                    onPressed: () {
+                      // Supprimer la consultation de la liste
+                      setState(() {
+                        consultations.removeAt(index);
+                      });
+                      // Afficher un message de confirmation
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Consultation rejetée'),
+                        ),
+                      );
+                    },
+                    child: Text('Rejeter'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                    ),
+                  ),
+                ],
               ),
             ),
-            SizedBox(height: 20),
-            ElevatedButton.icon(
-              onPressed: () {
-                // Logique pour voir la liste des patients
-              },
-              icon: Icon(Icons.list),
-              label: Text('Voir Liste des Patients'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.indigo,
-                padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-                textStyle: TextStyle(fontSize: 16),
-              ),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton.icon(
-              onPressed: () {
-                // Logique pour envoyer une prescription
-              },
-              icon: Icon(Icons.send),
-              label: Text('Envoyer une Prescription'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.deepPurple,
-                padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-                textStyle: TextStyle(fontSize: 16),
-              ),
-            ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

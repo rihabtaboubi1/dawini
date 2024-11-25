@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:pharma/screens/chatbot_screen.dart';
-import 'package:pharma/screens/video_call_screen.dart';
+import 'package:pharma/screens/video_call_screen.dart'; // Importation correcte du fichier
 
 class ConsultationChoiceScreen extends StatelessWidget {
+  final String patientName;
+
+  // Passer le nom du patient depuis l'écran précédent
+  ConsultationChoiceScreen({required this.patientName});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,7 +26,7 @@ class ConsultationChoiceScreen extends StatelessWidget {
                 // Naviguer vers l'écran du Chatbot
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => ChatbotScreen()),
+                  MaterialPageRoute(builder: (_) => ChatbotScreen()), // Chatbot screen reste inchangé
                 );
               },
               icon: Icon(Icons.chat),
@@ -35,10 +40,12 @@ class ConsultationChoiceScreen extends StatelessWidget {
             SizedBox(height: 30),
             ElevatedButton.icon(
               onPressed: () {
-                // Naviguer vers l'écran d'appel vidéo
+                // Naviguer vers l'écran d'appel vidéo avec le médecin
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => VideoCallScreen()),
+                  MaterialPageRoute(
+                    builder: (_) => VideoCallScreen(patientName: patientName), // Passer le nom du patient
+                  ),
                 );
               },
               icon: Icon(Icons.video_call),

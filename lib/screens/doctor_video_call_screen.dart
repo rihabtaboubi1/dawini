@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 
-class VideoCallScreen extends StatefulWidget {
+class DoctorVideoCallScreen extends StatefulWidget {
   final String patientName;
 
-  VideoCallScreen({required this.patientName});
+  DoctorVideoCallScreen({required this.patientName});
 
   @override
-  _VideoCallScreenState createState() => _VideoCallScreenState();
+  _DoctorVideoCallScreenState createState() => _DoctorVideoCallScreenState();
 }
 
-class _VideoCallScreenState extends State<VideoCallScreen> {
+class _DoctorVideoCallScreenState extends State<DoctorVideoCallScreen> {
   late RTCVideoRenderer _localRenderer;
   late RTCVideoRenderer _remoteRenderer;
   late MediaStream _localStream;
 
-  bool _isVideoLoading = true; // Variable pour gérer l'affichage du message d'attente
+  bool _isVideoLoading = true; // Gère l'affichage du message de chargement
 
   @override
   void initState() {
@@ -25,11 +25,10 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
     _localRenderer = RTCVideoRenderer();
     _remoteRenderer = RTCVideoRenderer();
 
-    // Initialisation des flux vidéo
+    // Démarrer les flux vidéo
     initRenderers();
   }
 
-  // Fonction pour initialiser les flux vidéo
   Future<void> initRenderers() async {
     await _localRenderer.initialize();
     await _remoteRenderer.initialize();
@@ -42,11 +41,14 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
 
     setState(() {
       _localStream = localStream;
-      _isVideoLoading = false; // Une fois le flux local prêt, on arrête d'afficher le message de chargement
+      _isVideoLoading = false; // Masquer le message de chargement une fois prêt
     });
 
-    // Afficher la vidéo locale
+    // Associer le flux local au renderer local
     _localRenderer.srcObject = localStream;
+
+    // Simulez la vidéo distante en attendant d'ajouter la signalisation WebRTC
+    // _remoteRenderer.srcObject = <MediaStream depuis WebRTC signalisation>
   }
 
   @override
@@ -63,16 +65,16 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Appel Vidéo avec ${widget.patientName}'),
-        backgroundColor: Colors.greenAccent,
+        backgroundColor: Colors.blueAccent,
       ),
       body: Center(
         child: Stack(
           children: [
-            // Affichage de la vidéo distante (du médecin) si elle est prête
+            // Vidéo distante (du patient)
             Positioned.fill(
-              child: RTCVideoView(_remoteRenderer), // Affiche la vidéo distante
+              child: RTCVideoView(_remoteRenderer),
             ),
-            // Affichage de la vidéo locale (du patient) dans un petit cadre
+            // Vidéo locale (du médecin)
             Positioned(
               bottom: 20,
               right: 20,
@@ -83,20 +85,20 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(color: Colors.blueAccent, width: 2),
                 ),
-                child: RTCVideoView(_localRenderer), // Affiche la vidéo locale
+                child: RTCVideoView(_localRenderer), // Affiche la caméra du médecin
               ),
             ),
-            // Affichage du message "En cours, veuillez patienter..." pendant la préparation
+            // Affichage d'un message de chargement
             if (_isVideoLoading)
               Center(
-                child: CircularProgressIndicator(), // Affiche un indicateur de chargement
+                child: CircularProgressIndicator(),
               ),
             if (_isVideoLoading)
               Center(
                 child: Padding(
                   padding: const EdgeInsets.all(20.0),
                   child: Text(
-                    "En cours, veuillez patienter...",
+                    "Connexion à l'appel...",
                     style: TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
                     textAlign: TextAlign.center,
                   ),
